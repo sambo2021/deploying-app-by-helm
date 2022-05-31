@@ -1,0 +1,20 @@
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: app-monitor
+  # Change this to the namespace the Prometheus instance is running in
+  namespace: default
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      front-service: metrics-watcher
+  namespaceSelector:
+    # matchNames:
+    # - default
+    any: true
+  endpoints:
+  - port: front-service-port
+    interval: 15s

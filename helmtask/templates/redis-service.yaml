@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Values.redisservice.name}}
+spec:
+  type: {{.Values.redisservice.type}}
+  ports:
+    - port: {{.Values.redisservice.port}}
+      targetPort: {{.Values.redisservice.port}}
+  selector:
+    app: {{.Values.redispod.name}}

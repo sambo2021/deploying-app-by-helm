@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.redispod.name}}
+spec:
+  replicas: {{.Values.replicaCount}}
+  selector:
+    matchLabels:
+      app: {{.Values.redispod.name}}
+  template:
+    metadata:
+      labels:
+        app: {{.Values.redispod.name}}
+    spec:
+      containers:
+        - name: {{.Values.redispod.ContainerName}}
+          image: {{.Values.redispod.image}}
+          ports:
+            - containerPort: {{.Values.redispod.ContainerPort}}
+              

@@ -1,0 +1,86 @@
+1 - inside python folder app 
+ #docker build -f Dockerfile -t python-App .
+ #docker tag python-app mohamedsambo/helm-python-app
+ #docker push mohamedsambo/helm-python-app
+ #docker pull redis   
+ #docker tag redis  mohamedsambo/helm-redis-app
+ #docker push  mohamedsambo/helm-redis-app
+ 
+2 - using mohamedsambo/helm-python-app in python-app yaml file image in containers 
+    using mohamedsambo/helm-redis-app  in redis-app yaml  file image in containers
+    
+3 - use the redis service name as redis-host env value inside python app yaml file 
+
+
+
+4 - kubectl apply -f front-deployment.yaml
+    kubectl apply -f front-service.yaml
+    kubectl apply -f redis-deployment.yaml
+    kubectl apply -f redis-service.yaml
+    
+5 - minikube service front-api --url
+
+/// replace all previous steps and values inside yaml files by using helm 
+
+1- check on identation 
+   #helm lint ./helmtask
+2- show all yaml files and its values 
+   #helm template ./helmtask
+3- apply helm and define release name 
+   #helm install python-app ./helmtask
+4- then you can check all deployments and services using kubectl 
+
+--------------------------------------------------------------------------------------------
+
+installing kube-prometheous-stack 
+
+$ helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+
+$ helm repo update
+
+$ helm install prometheus  prometheus-community/kube-prometheus-stack
+
+$ kubectl get svc
+
+$ kubectl port-forward svc/prometheus-prometheus-node-exporter 9100
+
+$ kubectl port-forward svc/prometheus-operated 9090
+
+$ kubectl port-forward deployment/prometheus-grafana 3000
+
+   grafana - username : admin
+   grafana - password : prom-operator
+   
+now prometheus , grafana and node exporter can be accessed by 
+     127.0.0.1:9100
+     127.0.0.1:9090 
+     127.0.0.1:3000
+     
+now we need to add our deployment of python app as a target to our prometheus 
+1 - deploy exporter for our app 
+
+
+
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: app-monitor
+  # Change this to the namespace the Prometheus instance is running in
+  namespace: default
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      front-service: metrics-watcher
+  namespaceSelector:
+    # matchNames:
+    # - default
+    any: true
+  endpoints:
+  - port: front-service-port
+    interval: 15s
+
+
+

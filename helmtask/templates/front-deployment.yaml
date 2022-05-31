@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: front-api
+spec:
+  # How many copies of each pod do we want?
+  replicas: {{.Values.replicaCount}}
+  selector:
+    matchLabels:
+      # This must match the labels we set on the pod!
+      app: {{.Values.frontpod.label}}
+  # This template field is a regular pod configuration
+  # nested inside the deployment spec
+  template:
+    metadata:
+      # Set labels on the pod.
+      # This is used in the deployment selector.
+      labels:
+        app: {{.Values.frontpod.label}}
+    spec:
+      containers:
+        - name: {{.Values.frontpod.ContainerName}}
+          image: {{.Values.frontpod.image}}
+          ports:
+            - containerPort: {{.Values.frontpod.ContainerPort}}
+          env:
+            - name: ENVIRONMENT
+              value: {{.Values.frontpod.ENVIRONMENT}}
+            - name: HOST
+              value: {{.Values.frontpod.HOST}}
+            - name: PORT 
+              value: {{.Values.frontpod.PORT | quote}}
+            - name: REDIS_HOST 
+              value: {{.Values.redisservice.name | quote}}
+            - name: REDIS_PORT
+              value: {{.Values.redisservice.port | quote}}
+            - name: REDIS_DB
+              value: {{.Values.redisservice.RedisDB | quote}}
